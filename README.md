@@ -26,8 +26,53 @@ The application will start on port 8080.
 
 ## API Endpoints
 
+All endpoints are prefixed with `/api/v1`.
+
 ### Health Check
 
 - **URL:** `/health`
 - **Method:** `GET`
 - **Response:** `SmartClaims360 API is running`
+
+### Claims
+
+#### Create a new claim
+
+- **URL:** `/claims`
+- **Method:** `POST`
+- **Request Body:**
+  ```json
+  {
+    "claimantName": "John Doe",
+    "claimAmount": 100.50,
+    "claimType": "AUTO"
+  }
+  ```
+- **Example:**
+  ```bash
+  curl -X POST http://localhost:8080/api/v1/claims \
+  -H "Content-Type: application/json" \
+  -d '{
+    "claimantName": "John Doe",
+    "claimAmount": 100.50,
+    "claimType": "AUTO"
+  }'
+  ```
+
+#### Get all claims
+
+- **URL:** `/claims`
+- **Method:** `GET`
+- **Example:**
+  ```bash
+  curl http://localhost:8080/api/v1/claims
+  ```
+
+#### Get claim by ID
+
+- **URL:** `/claims/{id}`
+- **Method:** `GET`
+- **Example:**
+  ```bash
+  curl http://localhost:8080/api/v1/claims/<claim-id>
+  ```
