@@ -4,11 +4,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search-input');
     const deleteSelectedBtn = document.getElementById('delete-selected-btn');
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const logoutBtn = document.getElementById('logout-btn');
     let allClaims = []; // Store all claims to filter from
+
+    const token = localStorage.getItem('jwt');
+    if (!token) {
+        window.location.href = '/login.html';
+        return;
+    }
 
     const fetchClaims = async () => {
         try {
-            const response = await fetch('/api/v1/claims');
+            const response = await fetch('/api/v1/claims', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '/login.html';
+                return;
+            }
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -77,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(claimIds),
             });
@@ -99,9 +115,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
+    const logout = () => {
+        localStorage.removeItem('jwt');
+        window.location.href = '/login.html';
+    };
+
     searchInput.addEventListener('input', filterClaims);
     deleteSelectedBtn.addEventListener('click', deleteSelectedClaims);
     selectAllCheckbox.addEventListener('change', toggleSelectAll);
+    logoutBtn.addEventListener('click', logout);
 
     createClaimForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -118,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(claimRequest),
             });
