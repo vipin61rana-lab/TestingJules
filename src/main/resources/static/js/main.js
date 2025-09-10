@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const claimsTableBody = document.querySelector('#claims-table tbody');
     const createClaimForm = document.getElementById('create-claim-form');
     const searchInput = document.getElementById('search-input');
+    const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
     let allClaims = []; // Store all claims to filter from
 
     const fetchClaims = async () => {
@@ -30,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
             claims.forEach(claim => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
+                    <td><input type="checkbox" class="claim-checkbox" data-id="${claim.id}"></td>
                     <td>${claim.id}</td>
                     <td>${claim.claimantName}</td>
                     <td>${claim.claimAmount.toFixed(2)}</td>
@@ -56,7 +59,49 @@ document.addEventListener('DOMContentLoaded', function () {
         renderClaims(filteredClaims);
     };
 
+    const deleteSelectedClaims = async () => {
+        const selectedCheckboxes = document.querySelectorAll('.claim-checkbox:checked');
+        const claimIds = Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
+
+        if (claimIds.length === 0) {
+            alert('Please select at least one claim to delete.');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete ${claimIds.length} claim(s)?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/v1/claims', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(claimIds),
+            });
+
+            if (response.ok) {
+                fetchClaims(); // Refresh the table
+            } else {
+                alert('Error deleting claims.');
+            }
+        } catch (error) {
+            console.error('Error deleting claims:', error);
+            alert('An unexpected error occurred while deleting claims.');
+        }
+    };
+
+    const toggleSelectAll = (event) => {
+        const checkboxes = document.querySelectorAll('.claim-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = event.target.checked;
+        });
+    };
+
     searchInput.addEventListener('input', filterClaims);
+    deleteSelectedBtn.addEventListener('click', deleteSelectedClaims);
+    selectAllCheckbox.addEventListener('change', toggleSelectAll);
 
     createClaimForm.addEventListener('submit', async (event) => {
         event.preventDefault();

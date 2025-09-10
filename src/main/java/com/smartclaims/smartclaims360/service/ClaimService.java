@@ -31,4 +31,8 @@ public class ClaimService {
     public Optional<Claim> getClaimById(UUID id) {
         return claimRepository.findById(id);
     }
+
+    public void deleteClaims(List<UUID> ids) {
+        claimRepository.deleteAllByIdInBatch(ids);
+    }
 }

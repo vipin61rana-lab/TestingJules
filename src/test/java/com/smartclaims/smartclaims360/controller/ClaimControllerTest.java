@@ -16,10 +16,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 
 import static org.hamcrest.Matchers.hasSize;
+import org.junit.jupiter.api.Assertions;
+import java.util.List;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -108,5 +112,20 @@ class ClaimControllerTest {
     void shouldReturnNotFoundForUnknownClaimId() throws Exception {
         mockMvc.perform(get("/api/v1/claims/b1b2b3b4-b5b6-b7b8-b9b0-b1b2b3b4b5b6"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldDeleteClaims() throws Exception {
+        Claim claim1 = new Claim(null, "John Doe", new BigDecimal("100.50"), "AUTO", "NEW", null);
+        Claim claim2 = new Claim(null, "Jane Doe", new BigDecimal("200.00"), "HOME", "NEW", null);
+        Claim savedClaim1 = claimRepository.save(claim1);
+        claimRepository.save(claim2);
+
+        mockMvc.perform(delete("/api/v1/claims")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(savedClaim1.getId()))))
+                .andExpect(status().isNoContent());
+
+        assertEquals(1, claimRepository.count());
     }
 }

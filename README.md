@@ -90,3 +90,21 @@ All endpoints are prefixed with `/api/v1`.
   ```bash
   curl http://localhost:8080/api/v1/claims/<claim-id>
   ```
+
+#### Delete claims
+
+- **URL:** `/claims`
+- **Method:** `DELETE`
+- **Request Body:**
+  ```json
+  [
+    "uuid-of-claim-to-delete-1",
+    "uuid-of-claim-to-delete-2"
+  ]
+  ```
+- **Example:**
+  ```bash
+  curl -X DELETE http://localhost:8080/api/v1/claims \
+  -H "Content-Type: application/json" \
+  -d '["uuid-of-claim-to-delete"]'
+  ```

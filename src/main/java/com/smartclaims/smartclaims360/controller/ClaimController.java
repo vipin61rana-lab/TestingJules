@@ -58,4 +58,14 @@ public class ClaimController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @Operation(summary = "Delete claims by IDs", description = "Deletes one or more claims based on a list of IDs.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Claims deleted successfully")
+    })
+    @DeleteMapping("/claims")
+    public ResponseEntity<Void> deleteClaims(@RequestBody List<UUID> ids) {
+        claimService.deleteClaims(ids);
+        return ResponseEntity.noContent().build();
+    }
 }
