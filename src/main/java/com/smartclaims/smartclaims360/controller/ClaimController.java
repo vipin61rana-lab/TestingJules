@@ -68,4 +68,17 @@ public class ClaimController {
         claimService.deleteClaims(ids);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Update an existing claim", description = "Updates an existing claim with new data.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Claim updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body"),
+            @ApiResponse(responseCode = "404", description = "Claim not found")
+    })
+    @PutMapping("/claims/{id}")
+    public ResponseEntity<Claim> updateClaim(@PathVariable UUID id, @Valid @RequestBody ClaimRequest claimRequest) {
+        return claimService.updateClaim(id, claimRequest)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

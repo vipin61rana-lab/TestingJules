@@ -35,4 +35,14 @@ public class ClaimService {
     public void deleteClaims(List<UUID> ids) {
         claimRepository.deleteAllByIdInBatch(ids);
     }
+
+    public Optional<Claim> updateClaim(UUID id, ClaimRequest claimRequest) {
+        return claimRepository.findById(id)
+                .map(claim -> {
+                    claim.setClaimantName(claimRequest.getClaimantName());
+                    claim.setClaimAmount(claimRequest.getClaimAmount());
+                    claim.setClaimType(claimRequest.getClaimType());
+                    return claimRepository.save(claim);
+                });
+    }
 }

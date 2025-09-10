@@ -91,6 +91,29 @@ All endpoints are prefixed with `/api/v1`.
   curl http://localhost:8080/api/v1/claims/<claim-id>
   ```
 
+#### Update a claim
+
+- **URL:** `/claims/{id}`
+- **Method:** `PUT`
+- **Request Body:**
+  ```json
+  {
+    "claimantName": "John Doe Updated",
+    "claimAmount": 150.00,
+    "claimType": "LIFE"
+  }
+  ```
+- **Example:**
+  ```bash
+  curl -X PUT http://localhost:8080/api/v1/claims/<claim-id> \
+  -H "Content-Type: application/json" \
+  -d '{
+    "claimantName": "John Doe Updated",
+    "claimAmount": 150.00,
+    "claimType": "LIFE"
+  }'
+  ```
+
 #### Delete claims
 
 - **URL:** `/claims`

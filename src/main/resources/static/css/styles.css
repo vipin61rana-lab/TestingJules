@@ -83,3 +83,17 @@ button {
 button:hover {
     background-color: #45a049;
 }
+
+/* Styles for inline editing */
+td .edit-input {
+    display: none;
+}
+
+tr.edit-mode .view-span {
+    display: none;
+}
+
+tr.edit-mode .edit-input {
+    display: block;
+    width: 90%;
+}

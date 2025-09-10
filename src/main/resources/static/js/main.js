@@ -35,25 +35,40 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const renderClaims = (claims) => {
-        claimsTableBody.innerHTML = ''; // Clear existing rows
+        claimsTableBody.innerHTML = '';
         if (claims.length === 0) {
             const row = document.createElement('tr');
             const cell = document.createElement('td');
-            cell.colSpan = 6;
+            cell.colSpan = 8;
             cell.textContent = 'No claims found.';
             row.appendChild(cell);
             claimsTableBody.appendChild(row);
         } else {
             claims.forEach(claim => {
                 const row = document.createElement('tr');
+                row.dataset.id = claim.id;
                 row.innerHTML = `
                     <td><input type="checkbox" class="claim-checkbox" data-id="${claim.id}"></td>
-                    <td>${claim.id}</td>
-                    <td>${claim.claimantName}</td>
-                    <td>${claim.claimAmount.toFixed(2)}</td>
-                    <td>${claim.claimType}</td>
-                    <td>${claim.status}</td>
-                    <td>${new Date(claim.createdAt).toLocaleString()}</td>
+                    <td><span class="view-span">${claim.id}</span></td>
+                    <td>
+                        <span class="view-span">${claim.claimantName}</span>
+                        <input type="text" class="edit-input" value="${claim.claimantName}" data-field="claimantName">
+                    </td>
+                    <td>
+                        <span class="view-span">${claim.claimAmount.toFixed(2)}</span>
+                        <input type="number" class="edit-input" value="${claim.claimAmount.toFixed(2)}" data-field="claimAmount">
+                    </td>
+                    <td>
+                        <span class="view-span">${claim.claimType}</span>
+                        <input type="text" class="edit-input" value="${claim.claimType}" data-field="claimType">
+                    </td>
+                    <td><span class="view-span">${claim.status}</span></td>
+                    <td><span class="view-span">${new Date(claim.createdAt).toLocaleString()}</span></td>
+                    <td>
+                        <button class="edit-btn">Edit</button>
+                        <button class="save-btn" style="display:none;">Save</button>
+                        <button class="cancel-btn" style="display:none;">Cancel</button>
+                    </td>
                 `;
                 claimsTableBody.appendChild(row);
             });
@@ -62,15 +77,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const filterClaims = () => {
         const searchTerm = searchInput.value.toLowerCase();
-        const filteredClaims = allClaims.filter(claim => {
-            return (
-                claim.id.toLowerCase().includes(searchTerm) ||
-                claim.claimantName.toLowerCase().includes(searchTerm) ||
-                claim.claimAmount.toString().includes(searchTerm) ||
-                claim.claimType.toLowerCase().includes(searchTerm) ||
-                claim.status.toLowerCase().includes(searchTerm)
-            );
-        });
+        const filteredClaims = allClaims.filter(claim =>
+            Object.values(claim).some(value =>
+                value.toString().toLowerCase().includes(searchTerm)
+            )
+        );
         renderClaims(filteredClaims);
     };
 
@@ -98,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (response.ok) {
-                fetchClaims(); // Refresh the table
+                fetchClaims();
             } else {
                 alert('Error deleting claims.');
             }
@@ -115,6 +126,61 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
+    const handleTableRowClick = (event) => {
+        const target = event.target;
+        const row = target.closest('tr');
+        if (!row) return;
+
+        if (target.classList.contains('edit-btn')) {
+            row.classList.add('edit-mode');
+            target.style.display = 'none';
+            row.querySelector('.save-btn').style.display = 'inline-block';
+            row.querySelector('.cancel-btn').style.display = 'inline-block';
+        } else if (target.classList.contains('cancel-btn')) {
+            row.classList.remove('edit-mode');
+            target.style.display = 'none';
+            row.querySelector('.save-btn').style.display = 'none';
+            row.querySelector('.edit-btn').style.display = 'inline-block';
+            // Reset input values to original
+            row.querySelectorAll('.edit-input').forEach(input => {
+                const fieldName = input.dataset.field;
+                const originalValue = allClaims.find(c => c.id === row.dataset.id)[fieldName];
+                input.value = originalValue;
+            });
+        } else if (target.classList.contains('save-btn')) {
+            const claimId = row.dataset.id;
+            const updatedClaim = {
+                claimantName: row.querySelector('[data-field="claimantName"]').value,
+                claimAmount: parseFloat(row.querySelector('[data-field="claimAmount"]').value),
+                claimType: row.querySelector('[data-field="claimType"]').value,
+            };
+            saveClaim(claimId, updatedClaim);
+        }
+    };
+
+    const saveClaim = async (id, claimData) => {
+        try {
+            const response = await fetch(`/api/v1/claims/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(claimData),
+            });
+
+            if (response.ok) {
+                fetchClaims(); // Refresh the table
+            } else {
+                const errorData = await response.json();
+                alert(`Error updating claim: ${JSON.stringify(errorData)}`);
+            }
+        } catch (error) {
+            console.error('Error updating claim:', error);
+            alert('An unexpected error occurred while updating the claim.');
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('jwt');
         window.location.href = '/login.html';
@@ -124,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteSelectedBtn.addEventListener('click', deleteSelectedClaims);
     selectAllCheckbox.addEventListener('change', toggleSelectAll);
     logoutBtn.addEventListener('click', logout);
+    claimsTableBody.addEventListener('click', handleTableRowClick);
 
     createClaimForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -158,6 +225,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Initial fetch of claims
     fetchClaims();
 });

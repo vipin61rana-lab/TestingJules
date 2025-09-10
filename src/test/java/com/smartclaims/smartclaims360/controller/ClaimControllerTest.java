@@ -22,6 +22,7 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -129,5 +130,38 @@ class ClaimControllerTest {
                 .andExpect(status().isNoContent());
 
         assertEquals(1, claimRepository.count());
+    }
+
+    @Test
+    void shouldUpdateClaim() throws Exception {
+        Claim claim = new Claim(null, "John Doe", new BigDecimal("100.50"), "AUTO", "NEW", null);
+        Claim savedClaim = claimRepository.save(claim);
+
+        ClaimRequest updateRequest = new ClaimRequest();
+        updateRequest.setClaimantName("John Doe Updated");
+        updateRequest.setClaimAmount(new BigDecimal("150.00"));
+        updateRequest.setClaimType("LIFE");
+
+        mockMvc.perform(put("/api/v1/claims/" + savedClaim.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(savedClaim.getId().toString()))
+                .andExpect(jsonPath("$.claimantName").value("John Doe Updated"))
+                .andExpect(jsonPath("$.claimAmount").value(150.00))
+                .andExpect(jsonPath("$.claimType").value("LIFE"));
+    }
+
+    @Test
+    void shouldReturnNotFoundForUpdateOnUnknownClaimId() throws Exception {
+        ClaimRequest updateRequest = new ClaimRequest();
+        updateRequest.setClaimantName("John Doe Updated");
+        updateRequest.setClaimAmount(new BigDecimal("150.00"));
+        updateRequest.setClaimType("LIFE");
+
+        mockMvc.perform(put("/api/v1/claims/b1b2b3b4-b5b6-b7b8-b9b0-b1b2b3b4b5b6")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isNotFound());
     }
 }
