@@ -5,12 +5,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteSelectedBtn = document.getElementById('delete-selected-btn');
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
     const logoutBtn = document.getElementById('logout-btn');
+    const adminLink = document.getElementById('admin-link');
     let allClaims = []; // Store all claims to filter from
 
     const token = localStorage.getItem('jwt');
     if (!token) {
         window.location.href = '/login.html';
         return;
+    }
+
+    const parseJwt = (token) => {
+        try {
+            return JSON.parse(atob(token.split('.')[1]));
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const decodedToken = parseJwt(token);
+    if (decodedToken && decodedToken.roles && decodedToken.roles.includes('ROLE_ADMIN')) {
+        adminLink.style.display = 'inline-block';
     }
 
     const fetchClaims = async () => {

@@ -1,10 +1,13 @@
 package com.smartclaims.smartclaims360.config;
 
 import com.smartclaims.smartclaims360.entity.Claim;
+import com.smartclaims.smartclaims360.entity.User;
 import com.smartclaims.smartclaims360.repository.ClaimRepository;
+import com.smartclaims.smartclaims360.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -16,6 +19,8 @@ import java.util.Arrays;
 public class DataSeeder implements CommandLineRunner {
 
     private final ClaimRepository claimRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -27,6 +32,20 @@ public class DataSeeder implements CommandLineRunner {
             Claim claim5 = new Claim(null, "David Brown", new BigDecimal("3450.00"), "LIFE", null, null);
 
             claimRepository.saveAll(Arrays.asList(claim1, claim2, claim3, claim4, claim5));
+        }
+
+        if (userRepository.count() == 0) {
+            User vipin = new User();
+            vipin.setUsername("vipin");
+            vipin.setPassword(passwordEncoder.encode("password"));
+            vipin.setRoles("ROLE_ADMIN,ROLE_USER");
+            userRepository.save(vipin);
+
+            User rahul = new User();
+            rahul.setUsername("rahul");
+            rahul.setPassword(passwordEncoder.encode("password"));
+            rahul.setRoles("ROLE_USER");
+            userRepository.save(rahul);
         }
     }
 }
