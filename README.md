@@ -26,6 +26,12 @@ The application will start on port 8080.
 
 **Note:** The application is pre-populated with 5 sample claims for testing and demonstration purposes. You can retrieve them by calling the `GET /api/v1/claims` endpoint.
 
+## API Documentation
+
+The API documentation is available through Swagger UI. Once the application is running, you can access it at:
+
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
 ## API Endpoints
 
 All endpoints are prefixed with `/api/v1`.
