@@ -24,6 +24,8 @@ mvn spring-boot:run
 
 The application will start on port 8080.
 
+**Note:** The application is pre-populated with 5 sample claims for testing and demonstration purposes. You can retrieve them by calling the `GET /api/v1/claims` endpoint.
+
 ## API Endpoints
 
 All endpoints are prefixed with `/api/v1`.
