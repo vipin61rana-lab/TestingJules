@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const claimsTableBody = document.querySelector('#claims-table tbody');
     const createClaimForm = document.getElementById('create-claim-form');
+    const searchInput = document.getElementById('search-input');
+    let allClaims = []; // Store all claims to filter from
 
     const fetchClaims = async () => {
         try {
@@ -8,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            const claims = await response.json();
-            renderClaims(claims);
+            allClaims = await response.json();
+            renderClaims(allClaims);
         } catch (error) {
             console.error('Error fetching claims:', error);
         }
@@ -39,6 +41,22 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     };
+
+    const filterClaims = () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredClaims = allClaims.filter(claim => {
+            return (
+                claim.id.toLowerCase().includes(searchTerm) ||
+                claim.claimantName.toLowerCase().includes(searchTerm) ||
+                claim.claimAmount.toString().includes(searchTerm) ||
+                claim.claimType.toLowerCase().includes(searchTerm) ||
+                claim.status.toLowerCase().includes(searchTerm)
+            );
+        });
+        renderClaims(filteredClaims);
+    };
+
+    searchInput.addEventListener('input', filterClaims);
 
     createClaimForm.addEventListener('submit', async (event) => {
         event.preventDefault();
