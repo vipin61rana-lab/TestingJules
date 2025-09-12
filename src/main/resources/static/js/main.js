@@ -6,12 +6,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
     const logoutBtn = document.getElementById('logout-btn');
     const adminLink = document.getElementById('admin-link');
+    const processingLink = document.getElementById('processing-link');
     let allClaims = []; // Store all claims to filter from
 
     const token = localStorage.getItem('jwt');
     if (!token) {
         window.location.href = '/login.html';
         return;
+    } else {
+        // If token exists, user is logged in, so show the processing link
+        processingLink.style.display = 'inline-block';
     }
 
     const parseJwt = (token) => {

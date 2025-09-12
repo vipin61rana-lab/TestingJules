@@ -3,35 +3,34 @@ package com.smartclaims.smartclaims360.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartclaims.smartclaims360.dto.ClaimRequest;
 import com.smartclaims.smartclaims360.entity.Claim;
+import com.smartclaims.smartclaims360.entity.Client;
 import com.smartclaims.smartclaims360.repository.ClaimRepository;
+import com.smartclaims.smartclaims360.repository.ClientRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import org.junit.jupiter.api.Assertions;
-import java.util.List;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @WithMockUser
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ClaimControllerTest {
 
     @Autowired
@@ -42,6 +41,29 @@ class ClaimControllerTest {
 
     @Autowired
     private ClaimRepository claimRepository;
+
+    @Autowired
+    private ClientRepository clientRepository;
+
+    private Client testClient;
+
+    @BeforeEach
+    void setUp() {
+        claimRepository.deleteAll();
+        clientRepository.deleteAll();
+        testClient = new Client(null, "Test Client", "123 Test St", "555-1234", "test@example.com");
+        clientRepository.save(testClient);
+    }
+
+    private Claim createTestClaim(String name, String amount, String type) {
+        Claim claim = new Claim();
+        claim.setClient(testClient);
+        claim.setClaimantName(name);
+        claim.setClaimAmount(new BigDecimal(amount));
+        claim.setClaimType(type);
+        claim.setStatus("NEW");
+        return claimRepository.save(claim);
+    }
 
     @Test
     void shouldCreateClaim() throws Exception {
@@ -90,10 +112,8 @@ class ClaimControllerTest {
 
     @Test
     void shouldGetAllClaims() throws Exception {
-        Claim claim1 = new Claim(null, "John Doe", new BigDecimal("100.50"), "AUTO", "NEW", null);
-        Claim claim2 = new Claim(null, "Jane Doe", new BigDecimal("200.00"), "HOME", "NEW", null);
-        claimRepository.save(claim1);
-        claimRepository.save(claim2);
+        createTestClaim("John Doe", "100.50", "AUTO");
+        createTestClaim("Jane Doe", "200.00", "HOME");
 
         mockMvc.perform(get("/api/v1/claims"))
                 .andExpect(status().isOk())
@@ -102,8 +122,7 @@ class ClaimControllerTest {
 
     @Test
     void shouldGetClaimById() throws Exception {
-        Claim claim = new Claim(null, "John Doe", new BigDecimal("100.50"), "AUTO", "NEW", null);
-        Claim savedClaim = claimRepository.save(claim);
+        Claim savedClaim = createTestClaim("John Doe", "100.50", "AUTO");
 
         mockMvc.perform(get("/api/v1/claims/" + savedClaim.getId()))
                 .andExpect(status().isOk())
@@ -119,10 +138,8 @@ class ClaimControllerTest {
 
     @Test
     void shouldDeleteClaims() throws Exception {
-        Claim claim1 = new Claim(null, "John Doe", new BigDecimal("100.50"), "AUTO", "NEW", null);
-        Claim claim2 = new Claim(null, "Jane Doe", new BigDecimal("200.00"), "HOME", "NEW", null);
-        Claim savedClaim1 = claimRepository.save(claim1);
-        claimRepository.save(claim2);
+        Claim savedClaim1 = createTestClaim("John Doe", "100.50", "AUTO");
+        createTestClaim("Jane Doe", "200.00", "HOME");
 
         mockMvc.perform(delete("/api/v1/claims")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -134,8 +151,7 @@ class ClaimControllerTest {
 
     @Test
     void shouldUpdateClaim() throws Exception {
-        Claim claim = new Claim(null, "John Doe", new BigDecimal("100.50"), "AUTO", "NEW", null);
-        Claim savedClaim = claimRepository.save(claim);
+        Claim savedClaim = createTestClaim("John Doe", "100.50", "AUTO");
 
         ClaimRequest updateRequest = new ClaimRequest();
         updateRequest.setClaimantName("John Doe Updated");

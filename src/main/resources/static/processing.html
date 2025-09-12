@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Processing - SmartClaims 360</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/processing.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Claim Processing</h1>
+        <div class="progress-bar-container">
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+                <div class="step active" id="step-indicator-1">1<span class="step-label">Client Info</span></div>
+                <div class="step" id="step-indicator-2">2<span class="step-label">Claim Details</span></div>
+                <div class="step" id="step-indicator-3">3<span class="step-label">Review</span></div>
+                <div class="step" id="step-indicator-4">4<span class="step-label">Submit</span></div>
+            </div>
+        </div>
+
+        <div id="claim-processing-steps">
+            <!-- Step 1: Client Information -->
+            <div class="form-step" id="step-1">
+                <h2>Step 1: Client Information</h2>
+                <form id="client-info-form">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <button type="button" class="btn next-btn" id="next-step-1">Next</button>
+                </form>
+            </div>
+
+            <!-- Step 2: Claim Details -->
+            <div class="form-step" id="step-2" style="display: none;">
+                <h2>Step 2: Claim Details</h2>
+                <form id="claim-details-form">
+                    <div class="form-group">
+                        <label for="dateOfIncident">Date of Incident</label>
+                        <input type="date" id="dateOfIncident" name="dateOfIncident" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="claimType">Claim Type</label>
+                        <input type="text" id="claimType" name="claimType" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="claimAmount">Claim Amount</label>
+                        <input type="number" id="claimAmount" name="claimAmount" required min="0.01" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="4" required></textarea>
+                    </div>
+                    <button type="button" class="btn prev-btn" id="prev-step-2">Previous</button>
+                    <button type="button" class="btn next-btn" id="next-step-2">Next</button>
+                </form>
+            </div>
+
+            <!-- Step 3: Review -->
+            <div class="form-step" id="step-3" style="display: none;">
+                <h2>Step 3: Review Your Claim</h2>
+                <div id="review-details">
+                    <!-- Claim details will be populated here by JS -->
+                </div>
+                <button type="button" class="btn prev-btn" id="prev-step-3">Previous</button>
+                <button type="button" class="btn next-btn" id="next-step-3">Next</button>
+            </div>
+
+            <!-- Step 4: Submit -->
+            <div class="form-step" id="step-4" style="display: none;">
+                <h2>Step 4: Submit Claim</h2>
+                <p>You are about to submit this claim. Please confirm.</p>
+                <button type="button" class="btn prev-btn" id="prev-step-4">Previous</button>
+                <button type="button" class="btn" id="submit-claim">Submit Claim</button>
+            </div>
+        </div>
+
+        <div id="submission-success" style="display: none;">
+            <h2>Claim Submitted Successfully!</h2>
+            <p>Your claim has been submitted. Your claim ID is <span id="final-claim-id"></span>.</p>
+            <a href="/index.html" class="btn">Back to Home</a>
+        </div>
+    </div>
+
+    <script src="js/processing.js"></script>
+</body>
+</html>
