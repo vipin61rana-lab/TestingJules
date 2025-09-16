@@ -1,0 +1,80 @@
+.admin-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin-container h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #e74c3c;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.admin-section {
+    margin-bottom: 40px;
+}
+
+.admin-section h3 {
+    color: #34495e;
+    margin-bottom: 15px;
+}
+
+.user-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-form input,
+.user-form select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.user-form button {
+    padding: 8px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.user-form button:hover {
+    background-color: #2980b9;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th, .users-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.users-table th {
+    background-color: #f4f7f6;
+    color: #333;
+    font-weight: 600;
+}
+
+.users-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.error-message {
+    color: #e74c3c;
+    background-color: #fdd;
+    padding: 10px;
+    border: 1px solid #e74c3c;
+    border-radius: 4px;
+}
