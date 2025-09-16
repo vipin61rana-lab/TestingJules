@@ -52,3 +52,31 @@ input:focus, textarea:focus, select:focus {
     font-size: 14px;
     margin-top: 10px;
 }
+
+/* Header for pages like Admin and Processing */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.page-header h2, .page-header h1 {
+    margin: 0;
+}
+
+.btn-back {
+    background-color: #7f8c8d;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    border: none;
+}
+
+.btn-back:hover {
+    background-color: #6c7a7b;
+}

@@ -11,7 +11,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     }
 
     if (allowedRoles && user?.roles) {
-        const userRoles = user.roles.split(',');
+        const userRoles = Array.isArray(user.roles) ? user.roles : user.roles.split(',');
         const hasRequiredRole = userRoles.some(role => allowedRoles.includes(role));
 
         if (!hasRequiredRole) {

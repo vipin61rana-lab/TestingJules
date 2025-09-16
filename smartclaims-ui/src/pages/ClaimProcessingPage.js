@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import ProgressBar from '../components/ProgressBar';
 import ClientInfoStep from '../components/ClientInfoStep';
@@ -49,7 +50,7 @@ const ClaimProcessingPage = () => {
                     <div className="submission-success">
                         <h2>Claim Submitted Successfully!</h2>
                         <p>Your claim ID is: <strong>{claimId}</strong></p>
-                        <p>Thank you for using SmartClaims360.</p>
+                        <Link to="/" className="btn-back">Back to Dashboard</Link>
                     </div>
                 );
             default:
@@ -57,11 +58,21 @@ const ClaimProcessingPage = () => {
         }
     };
 
+    const resetProcess = () => {
+        setCurrentStep(1);
+        setClaimId(null);
+        setFormData({ clientInfo: {}, claimDetails: {} });
+    };
+
     return (
         <div>
             <Header />
             <main className="processing-container">
-                <h1>Claim Processing</h1>
+                <div className="page-header">
+                    <h1>Claim Processing</h1>
+                    {currentStep < 5 && <Link to="/" className="btn-back">Back to Dashboard</Link>}
+                    {currentStep === 5 && <button onClick={resetProcess} className="btn-back">Process Another Claim</button>}
+                </div>
                 {currentStep <= 4 && <ProgressBar currentStep={currentStep} />}
                 <div className="step-content">
                     {renderStep()}

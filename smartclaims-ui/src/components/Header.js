@@ -12,7 +12,9 @@ const Header = () => {
         navigate('/login');
     };
 
-    const userRoles = user?.roles ? user.roles.split(',') : [];
+    const userRoles = user?.roles
+        ? (Array.isArray(user.roles) ? user.roles : user.roles.split(','))
+        : [];
     const isAdmin = userRoles.includes('ROLE_ADMIN');
 
     return (

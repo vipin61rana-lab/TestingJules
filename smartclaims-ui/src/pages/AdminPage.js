@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { getUsers, createUser } from '../services/apiService';
 import './AdminPage.css';
@@ -42,7 +43,10 @@ const AdminPage = () => {
         <div>
             <Header />
             <main className="admin-container">
-                <h2>User Management</h2>
+                <div className="page-header">
+                    <h2>User Management</h2>
+                    <Link to="/" className="btn-back">Back to Dashboard</Link>
+                </div>
 
                 <div className="admin-section">
                     <h3>Create New User</h3>
