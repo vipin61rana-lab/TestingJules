@@ -12,15 +12,7 @@ const Header = () => {
         navigate('/login');
     };
 
-    // Ensure user.roles is a string before splitting
-    let userRoles = [];
-    if (user?.roles) {
-        if (Array.isArray(user.roles)) {
-            userRoles = user.roles;
-        } else if (typeof user.roles === 'string') {
-            userRoles = user.roles.split(',');
-        }
-    }
+    const userRoles = user?.roles ? user.roles.split(',') : [];
     const isAdmin = userRoles.includes('ROLE_ADMIN');
 
     return (

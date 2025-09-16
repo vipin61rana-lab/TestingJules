@@ -1,17 +1,16 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Using named import
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('jwt'));
+    const [jwt, setJwt] = useState(() => localStorage.getItem('jwt'));
 
     useEffect(() => {
-        if (token) {
+        if (jwt) {
             try {
-                const decoded = jwtDecode(token);
-                // Check if token is expired
+                const decoded = jwtDecode(jwt);
                 if (decoded.exp * 1000 < Date.now()) {
                     logout();
                 } else {
@@ -24,22 +23,23 @@ export const AuthProvider = ({ children }) => {
                 console.error("Invalid token", error);
                 logout();
             }
+        } else {
+            setUser(null);
         }
-    }, [token]);
+    }, [jwt]);
 
-    const login = (newToken) => {
-        localStorage.setItem('jwt', newToken);
-        setToken(newToken);
+    const login = (newJwt) => {
+        localStorage.setItem('jwt', newJwt);
+        setJwt(newJwt);
     };
 
     const logout = () => {
         localStorage.removeItem('jwt');
-        setUser(null);
-        setToken(null);
+        setJwt(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout }}>
+        <AuthContext.Provider value={{ user, jwt, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

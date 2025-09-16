@@ -4,12 +4,12 @@ const apiClient = axios.create({
     baseURL: '/api/v1',
 });
 
-// Add a request interceptor to include the token in all requests
+// Add a request interceptor to include the jwt in all requests
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('jwt');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        const jwt = localStorage.getItem('jwt');
+        if (jwt) {
+            config.headers.Authorization = `Bearer ${jwt}`;
         }
         return config;
     },
@@ -21,10 +21,6 @@ apiClient.interceptors.request.use(
 export const login = async (credentials) => {
     try {
         const response = await apiClient.post('/auth/login', credentials);
-        // Ensure compatibility: if response.data.jwt exists, use it as token
-        if (response.data.jwt && !response.data.token) {
-            response.data.token = response.data.jwt;
-        }
         return response.data;
     } catch (error) {
         throw error.response ? error.response.data : new Error('Login failed');

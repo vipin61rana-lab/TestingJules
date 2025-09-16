@@ -16,8 +16,8 @@ const LoginPage = () => {
         setError('');
         try {
             const data = await loginService({ username, password });
-            if (data.token) {
-                login(data.token);
+            if (data.jwt) {
+                login(data.jwt);
                 navigate('/');
             } else {
                 setError('Login failed: No token received.');
