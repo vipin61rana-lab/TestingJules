@@ -21,6 +21,10 @@ apiClient.interceptors.request.use(
 export const login = async (credentials) => {
     try {
         const response = await apiClient.post('/auth/login', credentials);
+        // Ensure compatibility: if response.data.jwt exists, use it as token
+        if (response.data.jwt && !response.data.token) {
+            response.data.token = response.data.jwt;
+        }
         return response.data;
     } catch (error) {
         throw error.response ? error.response.data : new Error('Login failed');
